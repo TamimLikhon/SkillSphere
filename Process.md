@@ -20,7 +20,12 @@ git commit -m "something meaningful"
 
 git push -u origin branch1/nidhi/toma/shirin
 
-
 ## Pull Request is neccesary evil?
 
+git checkout main
+
 **git pull origin main**
+
+git merge branch1
+
+git push -u origin main
