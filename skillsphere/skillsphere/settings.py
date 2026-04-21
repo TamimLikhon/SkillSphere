@@ -21,7 +21,6 @@ INSTALLED_APPS = [
     'accounts',
     'interviews',  
     'jobs',        
-    'recruitment',
     'skills',
 ]
 
