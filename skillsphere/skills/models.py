@@ -1,6 +1,6 @@
 from django.db import models
-# from accounts.models import CandidateProfile
-# from jobs.models import JobPost
+from accounts.models import CandidateProfile
+from jobs.models import JobPost
 
 # Create your models here.
 class Skill(models.Model):
@@ -12,15 +12,15 @@ class Skill(models.Model):
         return self.skill_name
 
 class CandidateSkill(models.Model):
-    # candidate = models.ForeignKey(CandidateProfile, on_delete=models.CASCADE)
+    candidate = models.ForeignKey(CandidateProfile, on_delete=models.CASCADE)
     skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
     proficiency_level = models.CharField(max_length=50)
     years_of_experience = models.IntegerField()
     verified = models.BooleanField(default=False)
     added_date = models.DateTimeField(auto_now_add=True)
 
-    # def __str__(self):
-    #     return f"{self.candidate} - {self.skill}"
+    def __str__(self):
+        return f"{self.candidate} - {self.skill}"
 
 class Certificate(models.Model):
     STATUS = [
@@ -60,14 +60,13 @@ class JobSkillRequirement(models.Model):
         ('expert', 'Expert')
     ]
 
-    # job = models.ForeignKey(JobPost, on_delete=models.CASCADE, related_name='skill_requirements')
+    job = models.ForeignKey(JobPost, on_delete=models.CASCADE, related_name='skill_requirements')
     skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
     required_level = models.CharField(max_length=20, choices=LEVEL)
     is_mandatory = models.BooleanField(default=True)
 
     class Meta:
-        # unique_together = ('job', 'skill')
-        pass
+        unique_together = ('job', 'skill')
 
-    # def __str__(self):
-    #     return f"{self.job} - {self.skill}"
+    def __str__(self):
+        return f"{self.job} - {self.skill}"
