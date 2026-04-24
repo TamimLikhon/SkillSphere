@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Job Offers</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f6f9; margin: 0; padding: 0; }
+        h2 { text-align: center; margin-top: 20px; color: #333; }
+        .top-bar { width: 80%; margin: 20px auto 10px; display: flex; justify-content: space-between; align-items: center; }
+        table { width: 80%; margin: 0 auto 30px; border-collapse: collapse; background: white; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        th, td { padding: 12px; text-align: center; border: 1px solid #ddd; }
+        th { background: #007bff; color: white; }
+        tr:nth-child(even) { background: #f2f2f2; }
+        tr:hover { background: #e6f2ff; }
+        .badge { padding: 4px 10px; border-radius: 12px; color: white; font-size: 12px; }
+        .pending { background: #ffc107; color: #333; }
+        .accepted { background: #28a745; }
+        .rejected { background: #dc3545; }
+        .btn { text-decoration: none; color: white; padding: 6px 12px; border-radius: 5px; display: inline-block; }
+        .btn-primary { background: #007bff; }
+        .btn-success { background: #28a745; border: none; cursor: pointer; color: white; padding: 6px 12px; border-radius: 5px; }
+        .btn-danger { background: #dc3545; border: none; cursor: pointer; color: white; padding: 6px 12px; border-radius: 5px; }
+        .alert { width: 80%; margin: 30px auto; background: #d1ecf1; padding: 12px; border-radius: 6px; color: #0c5460; text-align: center; }
+    </style>
+</head>
+<body>
+<div class="top-bar">
+    <h2 style="margin:0;">Job Offers</h2>
+    {% if request.user.role == 'recruiter' %}
+        <a href="{% url 'create_offer' %}" class="btn btn-primary">Create Offer</a>
+    {% endif %}
+</div>
+
+{% if offers %}
+<table>
+    <tr>
+        <th>Job</th>
+        <th>Salary</th>
+        <th>Joining Date</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+    {% for offer in offers %}
+    <tr>
+        <td>{{ offer.job.title }}</td>
+        <td>{{ offer.offered_salary }}</td>
+        <td>{{ offer.joining_date }}</td>
+        <td><span class="badge {{ offer.offer_status }}">{{ offer.offer_status|upper }}</span></td>
+        <td>
+            {% if request.user.role == 'candidate' and offer.offer_status == 'pending' %}
+            <form method="POST" action="{% url 'respond_offer' offer.pk %}">
+                {% csrf_token %}
+                <button name="action" value="accepted" class="btn-success">Accept</button>
+                <button name="action" value="rejected" class="btn-danger">Reject</button>
+            </form>
+            {% else %} — {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+    <div class="alert">No offers found.</div>
+{% endif %}
+</body>
+</html>

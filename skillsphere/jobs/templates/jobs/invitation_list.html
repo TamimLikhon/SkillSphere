@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Invitations</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f6f9; margin: 0; padding: 0; }
+        h2 { text-align: center; margin-top: 20px; color: #333; }
+        .top-bar { width: 80%; margin: 20px auto 10px; display: flex; justify-content: space-between; align-items: center; }
+        table { width: 80%; margin: 0 auto 30px; border-collapse: collapse; background: white; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        th, td { padding: 12px; text-align: center; border: 1px solid #ddd; }
+        th { background: #007bff; color: white; }
+        tr:nth-child(even) { background: #f2f2f2; }
+        tr:hover { background: #e6f2ff; }
+        .badge { padding: 4px 10px; border-radius: 12px; color: white; font-size: 12px; }
+        .pending { background: #ffc107; color: #333; }
+        .accepted { background: #28a745; }
+        .rejected { background: #dc3545; }
+        .btn { text-decoration: none; color: white; padding: 6px 12px; border-radius: 5px; display: inline-block; }
+        .btn-primary { background: #007bff; }
+        .btn-success { background: #28a745; border: none; cursor: pointer; color: white; padding: 6px 12px; border-radius: 5px; }
+        .btn-danger { background: #dc3545; border: none; cursor: pointer; color: white; padding: 6px 12px; border-radius: 5px; }
+        .alert { width: 80%; margin: 30px auto; background: #d1ecf1; padding: 12px; border-radius: 6px; color: #0c5460; text-align: center; }
+    </style>
+</head>
+<body>
+<div class="top-bar">
+    <h2 style="margin:0;">Invitations</h2>
+    {% if request.user.role == 'recruiter' %}
+        <a href="{% url 'send_invitation' %}" class="btn btn-primary">Send Invitation</a>
+    {% endif %}
+</div>
+
+{% if invitations %}
+<table>
+    <tr>
+        <th>Job</th>
+        {% if request.user.role == 'recruiter' %}<th>Candidate</th>{% endif %}
+        {% if request.user.role == 'candidate' %}<th>Company</th>{% endif %}
+        <th>Message</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+    {% for inv in invitations %}
+    <tr>
+        <td>{{ inv.job.title }}</td>
+        {% if request.user.role == 'recruiter' %}
+            <td>{{ inv.candidate.full_name }}</td>
+        {% endif %}
+        {% if request.user.role == 'candidate' %}
+            <td>{{ inv.recruiter.company_name }}</td>
+        {% endif %}
+        <td>{{ inv.message|truncatechars:50 }}</td>
+        <td><span class="badge {{ inv.status }}">{{ inv.status|upper }}</span></td>
+        <td>
+            {% if request.user.role == 'candidate' and inv.status == 'pending' %}
+            <form method="POST" action="{% url 'respond_invitation' inv.pk %}">
+                {% csrf_token %}
+                <button name="action" value="accepted" class="btn-success">Accept</button>
+                <button name="action" value="rejected" class="btn-danger">Reject</button>
+            </form>
+            {% else %} — {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+    <div class="alert">No invitations found.</div>
+{% endif %}
+</body>
+</html>
