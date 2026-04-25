@@ -32,7 +32,6 @@ class Interview(models.Model):
     candidate = models.ForeignKey(CandidateProfile, on_delete=models.CASCADE)
     interviewer = models.ForeignKey(Interviewer, on_delete=models.CASCADE)
     job = models.ForeignKey(JobPost, on_delete=models.CASCADE)
-
     interview_type = models.CharField(max_length=20, choices=TYPE)
     round_number = models.IntegerField()
     scheduled_date = models.DateField()
